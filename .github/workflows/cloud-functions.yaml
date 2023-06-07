@@ -1,0 +1,55 @@
+name: Cloud Functions
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  workflow_dispatch:
+
+concurrency: ${{ github.ref }}-${{ github.workflow }}
+
+env:
+  ENV_FILE: env.yaml
+
+  REGION: us-central1
+  GCP_SA: integration-1@stealth-mode-three.iam.gserviceaccount.com
+  FN: stealh-mode-three-bing-ads-${{ github.ref_name }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.ENV_KEY }}
+
+      - uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v0
+
+      - uses: snok/install-poetry@v1
+
+      - run: poetry export --without-hashes -o requirements.txt
+
+      - run: |
+          echo "BING_DEVELOPER_TOKEN: ${{ secrets.BING_DEVELOPER_TOKEN }}" >> ${{ env.ENV_FILE }}
+          echo "BING_CLIENT_ID: ${{ secrets.BING_CLIENT_ID }}" >> ${{ env.ENV_FILE }}
+          echo "BING_CLIENT_SECRET: ${{ secrets.BING_CLIENT_SECRET }}" >> ${{ env.ENV_FILE }}
+          echo "BING_REFRESH_TOKEN: ${{ secrets.BING_REFRESH_TOKEN }}" >> ${{ env.ENV_FILE }}
+
+      - run: >-
+          gcloud functions deploy ${{ env.FN }}
+          --entry-point=main
+          --region=us-central1
+          --timeout=120
+          --memory=256MB
+          --runtime=python311
+          --trigger-http
+          --no-user-output-enabled
+          --service-account=${{ env.GCP_SA }}
+          --env-vars-file=${{ env.ENV_FILE }}
