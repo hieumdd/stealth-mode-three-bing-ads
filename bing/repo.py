@@ -7,7 +7,6 @@ logging.getLogger("suds.client").setLevel(logging.DEBUG)
 logging.getLogger("suds.transport.http").setLevel(logging.DEBUG)
 logging.getLogger("suds.client").addHandler(logging.StreamHandler())
 
-
 from bingads.authorization import (
     AuthorizationData,
     OAuthDesktopMobileAuthCodeGrant,
@@ -18,23 +17,25 @@ from bingads.v13.reporting.reporting_download_parameters import (
 )
 from bingads.v13.reporting.reporting_service_manager import ReportingServiceManager
 
+from secret_manager import get_secret
+
 ENVIRONMENT = "production"
 
 
 def get_auth_data() -> AuthorizationData:
-    auth_data = AuthorizationData(developer_token=os.getenv("BING_DEVELOPER_TOKEN"))
+    auth_data = AuthorizationData(developer_token=get_secret('BING_DEVELOPER_TOKEN'))
     auth = OAuthDesktopMobileAuthCodeGrant(
-        client_id=os.getenv("BING_CLIENT_ID"),
+        client_id=get_secret("BING_CLIENT_ID"),
         env=ENVIRONMENT,
     )
 
-    auth.state = "bld@bingads_amp"
-    auth.client_secret = os.getenv("BING_CLIENT_SECRET")
+    auth.state = "state"
+    auth.client_secret = get_secret("BING_CLIENT_SECRET")
 
     auth_data.authentication = auth
 
     auth_data.authentication.request_oauth_tokens_by_refresh_token(
-        os.getenv("BING_REFRESH_TOKEN")
+        get_secret("BING_REFRESH_TOKEN")
     )
     return auth_data
 

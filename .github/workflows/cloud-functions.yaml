@@ -36,12 +36,6 @@ jobs:
 
       - run: poetry export --without-hashes -o requirements.txt
 
-      - run: |
-          echo "BING_DEVELOPER_TOKEN: ${{ secrets.BING_DEVELOPER_TOKEN }}" >> ${{ env.ENV_FILE }}
-          echo "BING_CLIENT_ID: ${{ secrets.BING_CLIENT_ID }}" >> ${{ env.ENV_FILE }}
-          echo "BING_CLIENT_SECRET: ${{ secrets.BING_CLIENT_SECRET }}" >> ${{ env.ENV_FILE }}
-          echo "BING_REFRESH_TOKEN: ${{ secrets.BING_REFRESH_TOKEN }}" >> ${{ env.ENV_FILE }}
-
       - run: >-
           gcloud functions deploy ${{ env.FN }}
           --entry-point=main
@@ -52,4 +46,3 @@ jobs:
           --trigger-http
           --no-user-output-enabled
           --service-account=${{ env.GCP_SA }}
-          --env-vars-file=${{ env.ENV_FILE }}

@@ -9,6 +9,7 @@ python = "~3.11"
 google-cloud-bigquery = "^3.11.0"
 compose = "^1.4.8"
 bingads = "^13.0.16"
+google-cloud-secret-manager = "^2.16.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
