@@ -1,14 +1,14 @@
-from bing.pipeline.campaign_performance_report import (
+from pipeline.pipeline.campaign_performance_report import (
     pipeline as CampaignPerformanceReport,
 )
-from bing.pipeline_service import pipeline_service
+from pipeline.pipeline_service import run_pipeline
 
 
 def main(request):
     data = request.get_json(silent=True)
     print(data)
 
-    response = pipeline_service(
+    response = run_pipeline(
         CampaignPerformanceReport,
         "176151959",
         data.get("start"),

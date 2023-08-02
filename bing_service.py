@@ -1,5 +1,4 @@
 from typing import Any
-import os
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -17,13 +16,13 @@ from bingads.v13.reporting.reporting_download_parameters import (
 )
 from bingads.v13.reporting.reporting_service_manager import ReportingServiceManager
 
-from secret_manager import get_secret
+from secret_manager_service import get_secret
 
 ENVIRONMENT = "production"
 
 
-def get_auth_data() -> AuthorizationData:
-    auth_data = AuthorizationData(developer_token=get_secret('BING_DEVELOPER_TOKEN'))
+def get_auth_data(refresh_token: str) -> AuthorizationData:
+    auth_data = AuthorizationData(developer_token=get_secret("BING_DEVELOPER_TOKEN"))
     auth = OAuthDesktopMobileAuthCodeGrant(
         client_id=get_secret("BING_CLIENT_ID"),
         env=ENVIRONMENT,
@@ -34,9 +33,7 @@ def get_auth_data() -> AuthorizationData:
 
     auth_data.authentication = auth
 
-    auth_data.authentication.request_oauth_tokens_by_refresh_token(
-        get_secret("BING_REFRESH_TOKEN")
-    )
+    auth_data.authentication.request_oauth_tokens_by_refresh_token(refresh_token)
     return auth_data
 
 

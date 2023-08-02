@@ -2,7 +2,7 @@ from datetime import date
 
 from bingads.service_client import ServiceClient
 
-from bing.pipeline.interface import Pipeline
+from pipeline.pipeline.interface import Pipeline
 
 
 def build_report(reporting_service: ServiceClient):
