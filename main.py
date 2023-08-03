@@ -1,3 +1,4 @@
+from pipeline.accounts import ACCOUNTS
 from pipeline.pipeline.campaign_performance_report import (
     pipeline as CampaignPerformanceReport,
 )
@@ -8,12 +9,17 @@ def main(request):
     data = request.get_json(silent=True)
     print(data)
 
-    response = run_pipeline(
-        CampaignPerformanceReport,
-        "176151959",
-        data.get("start"),
-        data.get("end"),
-    )
+    response = {
+        "result": [
+            run_pipeline(
+                CampaignPerformanceReport,
+                account,
+                data.get("start"),
+                data.get("end"),
+            )
+            for account in ACCOUNTS
+        ]
+    }
 
     print(response)
     return response
